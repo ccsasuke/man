@@ -14,7 +14,7 @@ NAACL 2018 (To appear)
 - PyTorchNet
 - tqdm (for progress bar)
 
-A Anaconda `environment.yml` file is also provided.
+An Anaconda `environment.yml` file is also provided.
 
 ## Experiment 1: MDTC on the multi-domain Amazon dataset
 
