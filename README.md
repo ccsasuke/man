@@ -1,5 +1,6 @@
 # Multinomial Adversarial Nets
 This repo contains the source code for our paper:
+
 [**Multinomial Adversarial Networks for Multi-Domain Text Classification**]()
 <br>
 [Xilun Chen](http://www.cs.cornell.edu/~xlchen/),
@@ -12,6 +13,8 @@ NAACL 2018 (To appear)
 - PyTorch 0.3
 - PyTorchNet
 - tqdm (for progress bar)
+
+A Anaconda `environment.yml` file is also provided.
 
 ## Experiment 1: MDTC on the multi-domain Amazon dataset
 
