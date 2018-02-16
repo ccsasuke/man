@@ -1,7 +1,7 @@
 # Multinomial Adversarial Nets
 This repo contains the source code for our paper:
 
-[**Multinomial Adversarial Networks for Multi-Domain Text Classification**]()
+[**Multinomial Adversarial Networks for Multi-Domain Text Classification**](https://arxiv.org/abs/1802.05694)
 <br>
 [Xilun Chen](http://www.cs.cornell.edu/~xlchen/),
 [Claire Cardie](http://www.cs.cornell.edu/home/cardie/)
