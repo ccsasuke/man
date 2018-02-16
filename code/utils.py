@@ -134,7 +134,9 @@ def endless_get_next_batch(loaders, iters, domain):
     except StopIteration:
         iters[domain] = iter(loaders[domain])
         inputs, targets = next(iters[domain])
-    if opt.skip_leftover_batch and len(targets) < opt.batch_size:
+    # In PyTorch 0.3, Batch Norm no longer works for size 1 batch,
+    # so we will skip leftover batch of size < batch_size
+    if len(targets) < opt.batch_size:
         return endless_get_next_batch(loaders, iters, domain)
     return (inputs, targets)
 

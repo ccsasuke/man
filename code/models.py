@@ -161,14 +161,8 @@ class MlpFeatureExtractor(nn.Module):
             self.net.add_module('f-bn-final', nn.BatchNorm1d(output_size))
         self.net.add_module('f-relu-final', opt.act_unit)
 
-
     def forward(self, input):
-        f = self.net(input)
-        if opt.F_normalize:
-            f = f / torch.sqrt(torch.mean(f**2, dim=1, keepdim=True) + 1e-8)
-        elif opt.F_logsoftmax:
-            f = functional.log_softmax(f, dim=-1)
-        return f
+        return self.net(input)
 
 class SentimentClassifier(nn.Module):
     def __init__(self,

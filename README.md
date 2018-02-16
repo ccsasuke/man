@@ -12,9 +12,23 @@ NAACL 2018 (To appear)
 - Python 3.6
 - PyTorch 0.3
 - PyTorchNet
+- scipy
 - tqdm (for progress bar)
 
 An Anaconda `environment.yml` file is also provided.
+
+## Dev version
+
+The `dev` branch contains a full version of our code, including some options we experimented but did not include in the final version.
+
+## Before Running
+
+The pre-trained word embeddings file exceeds the 100MB limit of github, and is thus provided as a gzipped tar ball.
+Please run the following command to extract it first:
+
+```
+tar -xvf data/w2v/word2vec.tar.gz -C data/w2v/
+```
 
 ## Experiment 1: MDTC on the multi-domain Amazon dataset
 
@@ -40,6 +54,6 @@ python train_man_exp2.py --dataset prep-amazon --model mlp --no_wgan_trick --dom
 
 ```bash
 cd code/
-python train_man_exp3.py --dataset fdu-mtl --model cnn --fdu-mtl_dir {dataset_path} --max_epoch 50
+python train_man_exp3.py --dataset fdu-mtl --model cnn --max_epoch 50
 ```
 A larger batch size can also be used to reduce the training time.

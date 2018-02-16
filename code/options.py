@@ -9,7 +9,7 @@ parser.add_argument('--dataset', default='prep-amazon') # prep-amazon or fdu-mtl
 parser.add_argument('--prep_amazon_file', default='../data/prep-amazon/amazon.pkl')
 parser.add_argument('--fdu_mtl_dir', default='../data/fdu-mtl/')
 # pre-shuffle for cross validation data split
-parser.add_argument('--use_preshuffle/', dest='use_preshuffle', action='store_true', default=False)
+parser.add_argument('--use_preshuffle/', dest='use_preshuffle', action='store_true', default=True)
 parser.add_argument('--amazon_preshuffle_file', default='../data/prep-amazon/amazon-shuffle-indices.pkl')
 # for preprocessed amazon dataset; set to -1 to use 30000
 parser.add_argument('--feature_num', type=int, default=5000)
@@ -17,7 +17,7 @@ parser.add_argument('--feature_num', type=int, default=5000)
 parser.add_argument('--domains', type=str, nargs='+', default=[])
 parser.add_argument('--unlabeled_domains', type=str, nargs='+', default=[])
 parser.add_argument('--dev_domains', type=str, nargs='+', default=[])
-parser.add_argument('--emb_filename', default='/home/xc253/amdc-data/data/blitzer-amazon/w2v/word2vec.txt')
+parser.add_argument('--emb_filename', default='../data/w2v/word2vec.txt')
 parser.add_argument('--kfold', type=int, default=5) # cross-validation (n>=3)
 parser.add_argument('--max_seq_len', type=int, default=0) # set to <=0 to not truncate
 # which data to be used as unlabeled data: train, unlabeled, or both
@@ -26,9 +26,6 @@ parser.add_argument('--random_seed', type=int, default=1)
 parser.add_argument('--model_save_file', default='./save/man')
 parser.add_argument('--test_only', dest='test_only', action='store_true')
 parser.add_argument('--batch_size', type=int, default=8)
-# In PyTorch 0.3, Batch Norm no longer works for size 1 batch,
-# so we will skip leftover batch of size < batch_size
-parser.add_argument('--no_skip_leftover_batch', dest='skip_leftover_batch', action='store_false', default=True)
 parser.add_argument('--learning_rate', type=float, default=0.0001)
 parser.add_argument('--D_learning_rate', type=float, default=0.0001)
 parser.add_argument('--fix_emb', action='store_true', default=False)
@@ -49,9 +46,9 @@ parser.add_argument('--kernel_sizes', type=int, nargs='+', default=[3,4,5])
 # F size: feature_num -> F_hidden_sizes -> shared/domain_hidden_size
 parser.add_argument('--F_hidden_sizes', type=int, nargs='+', default=[1000, 500])
 
-# gr (gradient reversing), bs (boundary seeking), l2
+# gr (gradient reversing, NLL loss in the paper), bs (boundary seeking), l2
 # in the paper, we did not talk about the BS loss;
-# it's nearly equivalent to the GR loss (NLL loss in the paper)
+# it's nearly equivalent to the GR (NLL) loss
 parser.add_argument('--loss', default='gr')
 parser.add_argument('--shared_hidden_size', type=int, default=128)
 parser.add_argument('--domain_hidden_size', type=int, default=64)
@@ -63,17 +60,6 @@ parser.add_argument('--wgan_trick/', dest='wgan_trick', action='store_true', def
 parser.add_argument('--no_wgan_trick/', dest='wgan_trick', action='store_false')
 parser.add_argument('--n_critic', type=int, default=5) # hyperparameter k in the paper
 parser.add_argument('--lambd', type=float, default=0.05)
-# lambda scheduling: not used
-parser.add_argument('--lambd_schedule', dest='lambd_schedule', action='store_true', default=False)
-# gradient penalty: not used
-parser.add_argument('--grad_penalty', dest='grad_penalty', default='none') #none, wgan or dragan
-parser.add_argument('--onesided_gp', dest='onesided_gp', action='store_true')
-parser.add_argument('--gp_lambd', type=float, default=0.1)
-# orthogality penalty: not used
-parser.add_argument('--ortho_penalty', dest='ortho_penalty', type=float, default=0)
-# normalizing F features: not used
-parser.add_argument('--F_normalize/', dest='F_normalize', action='store_true')
-parser.add_argument('--F_logsoftmax/', dest='F_logsoftmax', action='store_true')
 # batch normalization
 parser.add_argument('--F_bn/', dest='F_bn', action='store_true', default=False)
 parser.add_argument('--no_F_bn/', dest='F_bn', action='store_false')
@@ -102,6 +88,7 @@ if len(opt.dev_domains) == 0:
     opt.dev_domains = opt.all_domains
 
 opt.max_kernel_size = max(opt.kernel_sizes)
+
 if opt.activation.lower() == 'relu':
     opt.act_unit = nn.ReLU()
 elif opt.activation.lower() == 'leaky':
