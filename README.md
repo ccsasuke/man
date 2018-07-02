@@ -1,12 +1,15 @@
 # Multinomial Adversarial Nets
 This repo contains the source code for our paper:
 
-[**Multinomial Adversarial Networks for Multi-Domain Text Classification**]()
+[**Multinomial Adversarial Networks for Multi-Domain Text Classification**](http://aclweb.org/anthology/N18-1111)
 <br>
 [Xilun Chen](http://www.cs.cornell.edu/~xlchen/),
 [Claire Cardie](http://www.cs.cornell.edu/home/cardie/)
 <br>
-NAACL 2018 (To appear)
+NAACL-HLT 2018
+<br>
+[paper](http://aclweb.org/anthology/N18-1111),
+[bibtex](https://aclanthology.coli.uni-saarland.de/papers/N18-1111/n18-1111.bib)
 
 ## Requirements:
 - Python 3.6
