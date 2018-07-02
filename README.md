@@ -10,7 +10,7 @@ NAACL 2018 (To appear)
 
 ## Requirements:
 - Python 3.6
-- PyTorch 0.3
+- PyTorch 0.4
 - PyTorchNet
 - tqdm (for progress bar)
 

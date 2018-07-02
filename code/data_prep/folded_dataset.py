@@ -42,17 +42,17 @@ class FoldedDataset:
     def get_folds(self, folds):
         indices = np.hstack([self.folds[f] for f in folds]).reshape(-1)
         if self.__class__.__bases__[0].__name__ == 'TensorDataset':
-            indices = torch.from_numpy(indices)
-            if opt.use_cuda:
-                indices = indices.cuda()
-            X = torch.index_select(self.data_tensor, 0, indices)
-            Y = torch.index_select(self.target_tensor, 0, indices)
+            indices = torch.from_numpy(indices).to(opt.device)
+            # if opt.use_cuda:
+            #     indices = indices.cuda()
+            X = torch.index_select(self.tensors[0], 0, indices)
+            Y = torch.index_select(self.tensors[1], 0, indices)
             return TensorDataset(X, Y)
         else:
             X = [self.X[i] for i in indices]
-            indices = torch.from_numpy(indices)
-            if opt.use_cuda:
-                indices = indices.cuda()
+            indices = torch.from_numpy(indices).to(opt.device)
+            # if opt.use_cuda:
+            #     indices = indices.cuda()
             Y = torch.index_select(self.Y, 0, indices)
         return AmazonDataset(X, Y, self.max_seq_len)
 

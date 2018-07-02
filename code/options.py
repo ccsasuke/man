@@ -17,7 +17,7 @@ parser.add_argument('--feature_num', type=int, default=5000)
 parser.add_argument('--domains', type=str, nargs='+', default=[])
 parser.add_argument('--unlabeled_domains', type=str, nargs='+', default=[])
 parser.add_argument('--dev_domains', type=str, nargs='+', default=[])
-parser.add_argument('--emb_filename', default='/home/xc253/amdc-data/data/blitzer-amazon/w2v/word2vec.txt')
+parser.add_argument('--emb_filename', default='../data/w2v/word2vec.txt')
 parser.add_argument('--kfold', type=int, default=5) # cross-validation (n>=3)
 parser.add_argument('--max_seq_len', type=int, default=0) # set to <=0 to not truncate
 # which data to be used as unlabeled data: train, unlabeled, or both
@@ -82,12 +82,13 @@ parser.add_argument('--no_C_bn/', dest='C_bn', action='store_false')
 parser.add_argument('--D_bn/', dest='D_bn', action='store_true', default=True)
 parser.add_argument('--no_D_bn/', dest='D_bn', action='store_false')
 parser.add_argument('--dropout', type=float, default=0.4)
-parser.add_argument('--use_cuda/', dest='use_cuda', action='store_true', default=True)
+parser.add_argument('--device/', dest='device', type=str, default='cuda')
 parser.add_argument('--debug/', dest='debug', action='store_true')
 opt = parser.parse_args()
 
 # automatically prepared options
-opt.use_cuda = opt.use_cuda and torch.cuda.is_available()
+if not torch.cuda.is_available():
+    opt.device = 'cpu'
 
 if len(opt.domains) == 0:
     # use default domains

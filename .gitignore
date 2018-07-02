@@ -101,3 +101,8 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# vim
+.*.swp
+
+data/w2v/word2vec.txt
