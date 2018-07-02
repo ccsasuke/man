@@ -105,10 +105,9 @@ def train(vocab, train_sets, dev_sets, test_sets, unlabeled_sets):
     D = DomainClassifier(opt.D_layers, opt.shared_hidden_size, opt.shared_hidden_size,
                          len(opt.all_domains), opt.loss, opt.dropout, opt.D_bn)
     
-    if opt.use_cuda:
-        F_s, C, D = F_s.cuda(), C.cuda(), D.cuda()
-        for f_d in F_d.values():
-            f_d = f_d.cuda()
+    F_s, C, D = F_s.to(opt.device), C.to(opt.device), D.to(opt.device)
+    for f_d in F_d.values():
+        f_d = f_d.to(opt.device)
     # optimizers
     optimizer = optim.Adam(itertools.chain(*map(list, [F_s.parameters() if F_s else [], C.parameters()] + [f.parameters() for f in F_d.values()])), lr=opt.learning_rate)
     optimizerD = optim.Adam(D.parameters(), lr=opt.D_learning_rate)
@@ -187,14 +186,14 @@ def train(vocab, train_sets, dev_sets, test_sets, unlabeled_sets):
                     d_total += len(d_inputs[1])
                     if opt.loss.lower() == 'l2':
                         _, tgt_indices = torch.max(d_targets, 1)
-                        d_correct += (pred==tgt_indices).sum().data[0]
+                        d_correct += (pred==tgt_indices).sum().item()
                         l_d = functional.mse_loss(d_outputs, d_targets)
                         l_d.backward()
                     else:
-                        d_correct += (pred==d_targets).sum().data[0]
+                        d_correct += (pred==d_targets).sum().item()
                         l_d = functional.nll_loss(d_outputs, d_targets)
                         l_d.backward()
-                    loss_d[domain] = l_d.data[0]
+                    loss_d[domain] = l_d.item()
                 optimizerD.step()
 
             # F&C iteration
@@ -212,7 +211,7 @@ def train(vocab, train_sets, dev_sets, test_sets, unlabeled_sets):
             for domain in opt.domains:
                 inputs, targets = utils.endless_get_next_batch(
                         train_loaders, train_iters, domain)
-                targets = utils.get_var(targets)
+                targets = targets.to(opt.device)
                 shared_feat = F_s(inputs)
                 domain_feat = F_d[domain](inputs)
                 features = torch.cat((shared_feat, domain_feat), dim=1)
@@ -221,7 +220,7 @@ def train(vocab, train_sets, dev_sets, test_sets, unlabeled_sets):
                 l_c.backward(retain_graph=True)
                 _, pred = torch.max(c_outputs, 1)
                 total[domain] += targets.size(0)
-                correct[domain] += (pred == targets).sum().data[0]
+                correct[domain] += (pred == targets).sum().item()
             # update F with D gradients on all domains
             for domain in opt.all_domains:
                 d_inputs, _ = utils.endless_get_next_batch(
@@ -302,10 +301,10 @@ def evaluate(name, loader, F_s, F_d, C):
     total = 0
     confusion = ConfusionMeter(opt.num_labels)
     for inputs, targets in tqdm(it):
-        targets = utils.get_var(targets)
+        targets = targets.to(opt.device)
         if not F_d:
             # unlabeled domain
-            d_features = utils.get_var(torch.zeros(len(targets), opt.domain_hidden_size))
+            d_features = torch.zeros(len(targets), opt.domain_hidden_size).to(opt.device)
         else:
             d_features = F_d(inputs)
         features = torch.cat((F_s(inputs), d_features), dim=1)
@@ -313,7 +312,7 @@ def evaluate(name, loader, F_s, F_d, C):
         _, pred = torch.max(outputs, 1)
         confusion.add(pred.data, targets.data)
         total += targets.size(0)
-        correct += (pred == targets).sum().data[0]
+        correct += (pred == targets).sum().item()
     acc = correct / total
     log.info('{}: Accuracy on {} samples: {}%'.format(name, total, 100.0*acc))
     log.debug(confusion.conf)

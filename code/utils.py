@@ -6,12 +6,6 @@ from torch import autograd
 from options import opt
 
 
-def get_var(tensor, require_grad=False):
-    if opt.use_cuda:
-        tensor = tensor.cuda()
-    return autograd.Variable(tensor, require_grad)
-
-
 def freeze_net(net):
     if not net:
         return
@@ -85,7 +79,7 @@ def calc_gradient_penalty(D, features, onesided=False, interpolate=True):
         noise = noise.cuda() if opt.use_cuda else noise
         interpolates = alpha*feature + (1-alpha)*(feature+0.5*feature.std()*noise)
 
-    interpolates = get_var(interpolates, require_grad=True)
+    interpolates = interpolates.to(opt.device, require_grad=True)
     disc_interpolates = D(interpolates)
 
     gradients = autograd.grad(outputs=disc_interpolates, inputs=interpolates,
@@ -153,7 +147,7 @@ def get_domain_label(loss, domain, size):
     else:
         labels = torch.LongTensor(size)
         labels.fill_(idx)
-    labels = get_var(labels)
+    labels = labels.to(opt.device)
     domain_labels[(domain, size)] = labels
     return labels
 
@@ -167,6 +161,6 @@ def get_random_domain_label(loss, size):
         labels.fill_(0)
     else:
         labels.fill_(1 / len(opt.all_domains))
-    labels = get_var(labels)
+    labels = labels.to(opt.device)
     random_domain_labels[size] = labels
     return labels

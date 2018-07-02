@@ -46,9 +46,7 @@ def read_mtl_file(filename):
                 raise Exception('Unknown format')
             words = parts[-1].split(' ')
             X.append({'tokens': words})
-    Y = torch.LongTensor(Y)
-    if opt.use_cuda:
-        Y = Y.cuda()
+    Y = torch.LongTensor(Y).to(opt.device)
     return (X, Y)
 
 

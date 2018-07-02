@@ -68,12 +68,13 @@ parser.add_argument('--no_C_bn/', dest='C_bn', action='store_false')
 parser.add_argument('--D_bn/', dest='D_bn', action='store_true', default=True)
 parser.add_argument('--no_D_bn/', dest='D_bn', action='store_false')
 parser.add_argument('--dropout', type=float, default=0.4)
-parser.add_argument('--use_cuda/', dest='use_cuda', action='store_true', default=True)
+parser.add_argument('--device/', dest='device', type=str, default='cuda')
 parser.add_argument('--debug/', dest='debug', action='store_true')
 opt = parser.parse_args()
 
 # automatically prepared options
-opt.use_cuda = opt.use_cuda and torch.cuda.is_available()
+if not torch.cuda.is_available():
+    opt.device = 'cpu'
 
 if len(opt.domains) == 0:
     # use default domains
