@@ -203,7 +203,8 @@ def train(vocab, train_sets, dev_sets, test_sets, unlabeled_sets):
             utils.freeze_net(D)
             if opt.fix_emb:
                 utils.freeze_net(F_s.word_emb)
-                map(utils.freeze_net, F_d.values())
+                for f_d in F_d.values():
+                    utils.freeze_net(f_d.word_emb)
             F_s.zero_grad()
             for f_d in F_d.values():
                 f_d.zero_grad()
