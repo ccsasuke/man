@@ -24,6 +24,10 @@ An Anaconda `environment.yml` file is also provided.
 
 The `dev` branch contains a full version of our code, including some options we experimented but did not include in the final version.
 
+## Follow-up Paper
+
+You might also be interested in our follow-up ACL 2019 [paper](https://www.aclweb.org/anthology/P19-1299) (source code available [here](https://github.com/microsoft/Multilingual-Model-Transfer)) with an improved model and better performance.
+
 ## Before Running
 
 The pre-trained word embeddings file exceeds the 100MB limit of github, and is thus provided as a gzipped tar ball.
